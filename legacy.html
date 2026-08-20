@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hand Scanner 2 Telapak Tangan | BRILiaN Culture Fest 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = { theme: { extend: { fontFamily: { inter: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'] } } } };
+</script>
+<style>
+:root {
+  --bcf-nusantara: #0857C3;
+  --bcf-cakrawala: #307FE2;
+  --bcf-mentari: #71C5E8;
+  --bcf-ink: #061C3F;
+  --bcf-gold: #F5C518;
+}
+
+* { -webkit-tap-highlight-color: transparent; cursor: none !important; }
+
+html, body { font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; }
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(1100px 560px at 12% -8%, rgba(49, 127, 226, 0.45), transparent 60%),
+    radial-gradient(900px 520px at 105% 15%, rgba(113, 197, 232, 0.22), transparent 55%),
+    radial-gradient(800px 600px at 50% 115%, rgba(6, 28, 63, 0.85), transparent 65%),
+    linear-gradient(160deg, #063A8C 0%, var(--bcf-nusantara) 45%, #0A63D6 72%, #0750B4 100%);
+  color: #fff;
+  overflow-x: hidden;
+}
+
+.bg-grid {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1.5px);
+  background-size: 28px 28px;
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,.9), transparent 85%);
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,.9), transparent 85%);
+}
+
+.glow-orb {
+  position: fixed;
+  border-radius: 9999px;
+  filter: blur(70px);
+  opacity: 0.5;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.text-gradient {
+  background: linear-gradient(90deg, #F5C518 0%, #FFDF6B 35%, #71C5E8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.scanner {
+  background: linear-gradient(180deg, rgba(11, 42, 92, 0.72), rgba(6, 28, 63, 0.82));
+  border: 1px solid rgba(113, 197, 232, 0.22);
+  box-shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transition: border-color .5s ease, box-shadow .5s ease;
+  backdrop-filter: blur(14px);
+}
+
+.scanner.scanner-scanning {
+  border-color: rgba(113, 197, 232, 0.65);
+  box-shadow: 0 24px 70px -20px rgba(49, 127, 226, 0.45), 0 0 44px -6px rgba(113, 197, 232, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.scanner.scanner-success {
+  border-color: rgba(113, 197, 232, 0.9);
+  box-shadow: 0 24px 80px -18px rgba(49, 127, 226, 0.6), 0 0 60px -6px rgba(113, 197, 232, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  animation: success-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes success-pulse {
+  0%, 100% { box-shadow: 0 24px 80px -18px rgba(49, 127, 226, 0.6), 0 0 46px -6px rgba(113, 197, 232, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.12); }
+  50% { box-shadow: 0 24px 90px -16px rgba(49, 127, 226, 0.75), 0 0 72px -4px rgba(113, 197, 232, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.14); }
+}
+
+.palm-slot {
+  position: relative;
+  border-radius: 1.5rem;
+  border: 2px dashed rgba(113, 197, 232, 0.35);
+  background: rgba(113, 197, 232, 0.06);
+  transition: transform .18s ease, border-color .4s ease, background .4s ease;
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.palm-slot:hover { border-color: rgba(113, 197, 232, 0.6); background: rgba(113, 197, 232, 0.1); }
+
+.palm-slot:active { transform: scale(0.97); }
+
+.palm-slot:focus-visible { outline: 2px solid var(--bcf-gold); outline-offset: 3px; }
+
+.scanner-idle .palm-slot { animation: breathe 2.6s ease-in-out infinite; }
+
+@keyframes breathe {
+  0%, 100% { border-color: rgba(113, 197, 232, 0.35); }
+  50% { border-color: rgba(113, 197, 232, 0.75); }
+}
+
+.palm-svg path {
+  fill: rgba(113, 197, 232, 0.1);
+  stroke: rgba(113, 197, 232, 0.55);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  transition: fill .5s ease, stroke .5s ease, filter .5s ease;
+}
+
+.scanner-scanning .palm-svg path {
+  fill: rgba(49, 127, 226, 0.3);
+  stroke: #307FE2;
+  filter: drop-shadow(0 0 10px rgba(49, 127, 226, 0.95)) drop-shadow(0 0 26px rgba(113, 197, 232, 0.6));
+  animation: palm-glow 1s ease-in-out infinite;
+}
+
+@keyframes palm-glow {
+  0%, 100% { filter: drop-shadow(0 0 8px rgba(49, 127, 226, 0.9)) drop-shadow(0 0 22px rgba(113, 197, 232, 0.5)); }
+  50% { filter: drop-shadow(0 0 16px rgba(49, 127, 226, 1)) drop-shadow(0 0 38px rgba(113, 197, 232, 0.85)); }
+}
+
+.scanner-success .palm-svg path {
+  fill: rgba(113, 197, 232, 0.35);
+  stroke: #71C5E8;
+  filter: drop-shadow(0 0 12px rgba(113, 197, 232, 0.95)) drop-shadow(0 0 34px rgba(113, 197, 232, 0.7));
+  animation: palm-glow 1.2s ease-in-out infinite;
+}
+
+.laser {
+  position: absolute;
+  left: 3%;
+  right: 3%;
+  height: 3px;
+  border-radius: 9999px;
+  opacity: 0;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, #71C5E8 28%, #D8F1FF 50%, #71C5E8 72%, transparent);
+  box-shadow: 0 0 12px 2px rgba(113, 197, 232, 0.9), 0 0 44px 8px rgba(113, 197, 232, 0.4);
+  z-index: 10;
+}
+
+.laser::before, .laser::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 26px;
+  pointer-events: none;
+}
+
+.laser::before { transform: translateY(-100%); background: linear-gradient(to bottom, transparent, rgba(113, 197, 232, 0.28)); }
+
+.laser::after { transform: translateY(100%); background: linear-gradient(to top, transparent, rgba(113, 197, 232, 0.28)); }
+
+.scanner-scanning .laser {
+  opacity: 1;
+  animation: laser-sweep 1.7s ease-in-out infinite;
+}
+
+@keyframes laser-sweep {
+  0%, 100% { top: 6%; }
+  50% { top: 94%; }
+}
+
+.progress-wrap { opacity: 0; transform: translateY(6px); transition: opacity .4s ease, transform .4s ease; }
+
+.scanner-scanning .progress-wrap, .scanner-success .progress-wrap { opacity: 1; transform: translateY(0); }
+
+.progress-track {
+  height: 10px;
+  border-radius: 9999px;
+  background: rgba(6, 28, 63, 0.8);
+  border: 1px solid rgba(113, 197, 232, 0.25);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, var(--bcf-nusantara), var(--bcf-cakrawala), var(--bcf-mentari));
+  box-shadow: 0 0 14px rgba(113, 197, 232, 0.85);
+  position: relative;
+  overflow: hidden;
+  transition: none;
+}
+
+.progress-fill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+  transform: translateX(-100%);
+  animation: sheen 1.3s linear infinite;
+}
+
+@keyframes sheen { to { transform: translateX(100%); } }
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 1.1rem;
+  border-radius: 9999px;
+  background: rgba(6, 28, 63, 0.7);
+  border: 1px solid rgba(113, 197, 232, 0.3);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.status-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 9999px;
+  flex: none;
+}
+
+.scanner-idle .status-dot {
+  background: var(--bcf-mentari);
+  box-shadow: 0 0 10px rgba(113, 197, 232, 0.9);
+  animation: dot-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes dot-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(0.8); }
+}
+
+.scanner-scanning .status-dot {
+  background: transparent;
+  border: 3px solid rgba(113, 197, 232, 0.3);
+  border-top-color: #fff;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.scanner-success .status-dot {
+  background: var(--bcf-gold);
+  box-shadow: 0 0 12px rgba(245, 197, 24, 0.95);
+  animation: pop-in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes pop-in {
+  from { transform: scale(0); }
+  to { transform: scale(1); }
+}
+
+.scan-btn {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  width: 100%;
+  max-width: 26rem;
+  padding: 1.05rem 2rem;
+  border-radius: 1.2rem;
+  background: linear-gradient(135deg, var(--bcf-cakrawala), var(--bcf-nusantara));
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 14px 34px -12px rgba(8, 87, 195, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: transform .18s ease, box-shadow .3s ease, filter .3s ease;
+}
+
+.scan-btn:hover { filter: brightness(1.12); box-shadow: 0 18px 40px -12px rgba(49, 127, 226, 0.95), inset 0 1px 0 rgba(255, 255, 255, 0.4); }
+
+.scan-btn:active { transform: scale(0.97); }
+
+.scan-btn:disabled { cursor: not-allowed; filter: saturate(0.7) brightness(0.9); }
+
+.scan-btn:focus-visible { outline: 3px solid var(--bcf-gold); outline-offset: 3px; }
+
+.scanner-scanning .scan-btn {
+  background: linear-gradient(135deg, var(--bcf-mentari), var(--bcf-cakrawala));
+  animation: btn-throb 1s ease-in-out infinite;
+}
+
+@keyframes btn-throb {
+  0%, 100% { box-shadow: 0 14px 34px -12px rgba(8, 87, 195, 0.9), 0 0 22px rgba(113, 197, 232, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.4); }
+  50% { box-shadow: 0 14px 44px -10px rgba(49, 127, 226, 1), 0 0 44px rgba(113, 197, 232, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.45); }
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  background: rgba(4, 17, 38, 0.72);
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .35s ease;
+}
+
+.modal-overlay.show { opacity: 1; pointer-events: auto; }
+
+.modal-card {
+  width: 100%;
+  max-width: 30rem;
+  border-radius: 2rem;
+  background: linear-gradient(180deg, #0E3E8F 0%, #06244F 100%);
+  border: 1px solid rgba(113, 197, 232, 0.4);
+  box-shadow: 0 40px 90px -30px rgba(0, 0, 0, 0.8), 0 0 50px -8px rgba(113, 197, 232, 0.5);
+  transform: translateY(26px) scale(0.94);
+  transition: transform .45s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+.modal-overlay.show .modal-card { transform: translateY(0) scale(1); }
+
+.check-ring {
+  animation: ring-pop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.check-ring::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 9999px;
+  border: 2px solid rgba(113, 197, 232, 0.7);
+  animation: ring-ping 1.6s ease-out infinite;
+}
+
+@keyframes ring-ping {
+  0% { transform: scale(0.85); opacity: 0.9; }
+  100% { transform: scale(1.45); opacity: 0; }
+}
+
+@keyframes ring-pop {
+  from { transform: scale(0.2); }
+  to { transform: scale(1); }
+}
+
+.confetti-piece {
+  position: fixed;
+  top: -24px;
+  z-index: 60;
+  border-radius: 2px;
+  pointer-events: none;
+  opacity: 0.95;
+  animation: confetti-fall linear forwards;
+}
+
+@keyframes confetti-fall {
+  0% { transform: translate3d(0, -5vh, 0) rotate(0deg); }
+  100% { transform: translate3d(var(--sway, 0px), 115vh, 0) rotate(760deg); opacity: 0.15; }
+}
+
+.brand-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  background: rgba(6, 28, 63, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(8px);
+}
+
+.float-slow { animation: floaty 6s ease-in-out infinite; }
+.float-slower { animation: floaty 8s ease-in-out infinite reverse; }
+
+@keyframes floaty {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-16px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scanner-scanning .laser, .scanner-idle .palm-slot, .scanner-scanning .palm-svg path, .scanner-scanning .scan-btn, .scanner.scanner-success { animation: none; }
+}
+</style>
+</head>
+<body class="min-h-screen font-inter antialiased selection:bg-[#F5C518] selection:text-[#061C3F]">
+
+<div class="glow-orb w-[480px] h-[480px] -top-40 -left-40" style="background:#307FE2;"></div>
+<div class="glow-orb w-[420px] h-[420px] -top-20 -right-32" style="background:#71C5E8;"></div>
+<div class="glow-orb w-[500px] h-[500px] -bottom-52 left-1/2 -translate-x-1/2" style="background:#0857C3; opacity:0.65;"></div>
+
+<header class="relative z-10 max-w-6xl mx-auto px-5 sm:px-8 pt-6 pb-2 flex items-start justify-between gap-4 flex-wrap">
+  <a href="#" class="flex items-center gap-3 group">
+    <span class="relative w-11 h-11 rounded-2xl bg-gradient-to-br from-[#F5C518] to-[#C79A0A] flex items-center justify-center shadow-lg shadow-[#F5C518]/30 group-hover:scale-105 transition-transform">
+      <svg class="w-6 h-6 text-[#061C3F]" viewBox="0 0 24 24" fill="currentColor">
+        <circle cx="12" cy="12" r="3.2" fill="#061C3F"/>
+        <g stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="12" y1="2" x2="12" y2="5.5"/>
+          <line x1="12" y1="18.5" x2="12" y2="22"/>
+          <line x1="2" y1="12" x2="5.5" y2="12"/>
+          <line x1="18.5" y1="12" x2="22" y2="12"/>
+          <line x1="4.9" y1="4.9" x2="7.4" y2="7.4"/>
+          <line x1="16.6" y1="16.6" x2="19.1" y2="19.1"/>
+          <line x1="19.1" y1="4.9" x2="16.6" y2="7.4"/>
+          <line x1="7.4" y1="16.6" x2="4.9" y2="19.1"/>
+        </g>
+      </svg>
+    </span>
+    <span class="leading-tight">
+      <span class="block text-lg sm:text-xl font-extrabold tracking-tight text-white">BRILiaN <span class="text-gradient">Culture Fest 2026</span></span>
+      <span class="block text-[11px] sm:text-xs font-medium tracking-[0.28em] uppercase text-[#71C5E8]">Berkolaborasi Memberi Arti</span>
+    </span>
+  </a>
+
+  <div class="flex items-center gap-2.5">
+    <div class="brand-chip">
+      <span class="w-6 h-6 rounded-md bg-[#0049C6] flex items-center justify-center shadow-sm">
+        <svg class="w-4 h-4 text-[#F5C518]" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a5 5 0 0 1 5 5v3h-2V7a3 3 0 0 0-6 0v3H7V7a5 5 0 0 1 5-5z"/><path d="M7 10h10v2h-1v6a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-6H7v-2z" opacity="0.85"/></svg>
+      </span>
+      <span class="text-sm font-extrabold tracking-wide text-white">BRI</span>
+    </div>
+    <div class="brand-chip">
+      <span class="w-6 h-6 rounded-md bg-gradient-to-br from-[#307FE2] to-[#0857C3] flex items-center justify-center shadow-sm">
+        <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13l9-9 9 9h-2l-1 8H6l-1-8H3z"/></svg>
+      </span>
+      <span class="text-sm font-bold tracking-wide text-white">Danantara Indonesia</span>
+    </div>
+  </div>
+</header>
+
+<main class="relative z-10 max-w-6xl mx-auto px-5 sm:px-8 py-10 sm:py-14 flex flex-col items-center">
+
+  <div class="text-center mb-10 sm:mb-12 max-w-2xl">
+    <span class="inline-flex items-center gap-2 rounded-full border border-[#71C5E8]/40 bg-[#061C3F]/50 backdrop-blur px-4 py-1.5 text-xs font-semibold tracking-[0.2em] uppercase text-[#71C5E8] mb-5">
+      <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>
+      Interactive Experience
+    </span>
+    <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight">
+      Hand Scanner <span class="text-gradient">2 Telapak Tangan</span>
+    </h1>
+    <p class="mt-4 text-base sm:text-lg font-medium text-[#B9DCf5]">
+      Letakkan kedua telapak tangan Anda pada area pindai, lalu tekan <span class="font-bold text-[#F5C518]">Enter</span> untuk merasakan momen kolaborasi yang memberi arti.
+    </p>
+  </div>
+
+  <div id="scanner" class="scanner scanner-idle relative w-full max-w-3xl rounded-[2rem] px-5 sm:px-10 py-8 sm:py-10">
+
+    <div class="flex flex-col items-center gap-6">
+
+      <div class="status-pill">
+        <span id="statusDot" class="status-dot"></span>
+        <span id="statusText">Silakan Letakkan Kedua Telapak Tangan</span>
+      </div>
+
+      <div id="palmsArea" class="relative w-full flex items-stretch justify-center gap-4 sm:gap-8">
+        <button id="palmL" class="palm-slot flex-1 max-w-[15rem] min-h-[13rem] sm:min-h-[16rem] flex flex-col items-center justify-center gap-3 p-4 sm:p-6" aria-label="Area telapak tangan kiri">
+          <svg class="palm-svg w-28 sm:w-36 h-auto" viewBox="0 0 260 280" fill="none" draggable="false">
+            <path transform="translate(260 0) scale(-1 1)" d="M85 30 C85 14 107 14 107 30 L107 105 L113 105 L113 20 C113 4 135 4 135 20 L135 105 L141 105 L141 30 C141 14 163 14 163 30 L163 105 L169 105 L169 44 C169 30 187 30 187 44 L187 112 C187 132 182 152 174 163 L174 246 C174 262 158 264 150 264 L118 264 C110 264 96 262 96 246 L96 178 C96 160 86 154 76 150 C58 142 28 140 18 120 C10 104 26 88 40 98 C50 104 56 112 64 116 C73 121 83 120 85 110 Z"/>
+          </svg>
+          <span class="text-xs font-semibold tracking-[0.18em] uppercase text-[#71C5E8]/90">Telapak Kiri</span>
+        </button>
+
+        <div class="laser"></div>
+
+        <button id="palmR" class="palm-slot flex-1 max-w-[15rem] min-h-[13rem] sm:min-h-[16rem] flex flex-col items-center justify-center gap-3 p-4 sm:p-6" aria-label="Area telapak tangan kanan">
+          <svg class="palm-svg w-28 sm:w-36 h-auto" viewBox="0 0 260 280" fill="none" draggable="false">
+            <path d="M85 30 C85 14 107 14 107 30 L107 105 L113 105 L113 20 C113 4 135 4 135 20 L135 105 L141 105 L141 30 C141 14 163 14 163 30 L163 105 L169 105 L169 44 C169 30 187 30 187 44 L187 112 C187 132 182 152 174 163 L174 246 C174 262 158 264 150 264 L118 264 C110 264 96 262 96 246 L96 178 C96 160 86 154 76 150 C58 142 28 140 18 120 C10 104 26 88 40 98 C50 104 56 112 64 116 C73 121 83 120 85 110 Z"/>
+          </svg>
+          <span class="text-xs font-semibold tracking-[0.18em] uppercase text-[#71C5E8]/90">Telapak Kanan</span>
+        </button>
+      </div>
+
+      <div class="progress-wrap w-full max-w-md">
+        <div class="flex items-center justify-between mb-2 text-xs font-semibold tracking-[0.16em] uppercase">
+          <span class="text-[#71C5E8]">Progres Pemindaian</span>
+          <span id="percent" class="text-white tabular-nums">0%</span>
+        </div>
+        <div class="progress-track">
+          <div id="progressFill" class="progress-fill"></div>
+        </div>
+      </div>
+
+      <button id="scanBtn" class="scan-btn" aria-label="Mulai pindai kedua telapak tangan">
+        <span class="flex items-center gap-2.5 text-base sm:text-lg">
+          <svg id="scanIcon" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 7V5a2 2 0 0 1 2-2h2"/>
+            <path d="M17 3h2a2 2 0 0 1 2 2v2"/>
+            <path d="M21 17v2a2 2 0 0 1-2 2h-2"/>
+            <path d="M7 21H5a2 2 0 0 1-2-2v-2"/>
+            <path d="M7 12h10"/>
+            <path d="M12 7v10"/>
+          </svg>
+          <span id="scanBtnText">Mulai Pindai</span>
+        </span>
+        <span id="scanBtnHint" class="text-xs font-medium opacity-80">Tekan Enter untuk memulai pemindaian</span>
+      </button>
+
+    </div>
+  </div>
+
+  <div class="mt-10 sm:mt-12 w-full max-w-4xl rounded-3xl border border-[#F5C518]/35 bg-gradient-to-r from-[#061C3F]/85 via-[#0A3A7E]/85 to-[#061C3F]/85 backdrop-blur p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-5 sm:gap-8 shadow-2xl">
+    <div class="w-14 h-14 sm:w-16 sm:h-16 flex-none rounded-2xl bg-gradient-to-br from-[#F5C518] to-[#C79A0A] flex items-center justify-center shadow-lg shadow-[#F5C518]/25 float-slow">
+      <svg class="w-8 h-8 sm:w-9 sm:h-9 text-[#061C3F]" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2l2.4 4.8L19.5 8l-3.6 3.9.8 5.1L12 14.5 7.3 17l.8-5.1L4.5 8l5.1-1.2L12 2z"/>
+      </svg>
+    </div>
+    <div class="text-center sm:text-left flex-1">
+      <h2 class="text-lg sm:text-xl font-extrabold text-white">BRILiaN Culture Fest Moment Challenge</h2>
+      <p class="mt-1.5 text-sm sm:text-base font-medium text-[#B9DCf5]">
+        Bagikan momen kolaborasi terbaikmu selama BCF 2026 dengan <span class="font-bold text-[#F5C518]">#BRILiaNCultureFest2026</span>, ajak rekanmu berkolaborasi, dan menangkan hadiah spesial dari BRI & Danantara Indonesia!
+      </p>
+    </div>
+    <a href="#" class="flex-none inline-flex items-center gap-2 rounded-2xl bg-gradient-to-br from-[#F5C518] to-[#C79A0A] px-6 py-3.5 font-bold text-[#061C3F] shadow-lg shadow-[#F5C518]/30 hover:brightness-110 hover:scale-[1.03] active:scale-95 transition-transform">
+      Ikuti Challenge
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+    </a>
+  </div>
+
+</main>
+
+<footer class="relative z-10 max-w-6xl mx-auto px-5 sm:px-8 pb-10 pt-2 text-center">
+  <div class="flex items-center justify-center gap-3 text-xs sm:text-sm font-semibold text-[#B9DCf5]">
+    <span>© 2026 BRILiaN Culture Fest</span>
+    <span class="w-1 h-1 rounded-full bg-[#71C5E8]"></span>
+    <span>BRI & Danantara Indonesia</span>
+    <span class="w-1 h-1 rounded-full bg-[#71C5E8]"></span>
+    <span class="text-gradient font-bold">Berkolaborasi Memberi Arti</span>
+  </div>
+</footer>
+
+<div id="modalOverlay" class="modal-overlay">
+  <div class="modal-card relative p-8 sm:p-10 text-center">
+    <div class="check-ring relative w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-[#71C5E8] to-[#0857C3] flex items-center justify-center shadow-xl shadow-[#71C5E8]/40">
+      <svg class="w-12 h-12 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 12.5l5 5L20 6.5"/>
+      </svg>
+    </div>
+
+    <h3 class="mt-6 text-2xl sm:text-3xl font-extrabold text-white">Pemindaian Berhasil!</h3>
+    <p class="mt-3 text-sm sm:text-base leading-relaxed text-[#B9DCf5]">
+      Dua telapak tangan, satu kolaborasi. Terima kasih telah menjadi bagian dari
+      <span class="font-bold text-white">BRILiaN Culture Fest 2026</span> — di mana setiap sentuhan
+      dan kerja keras para pekerja serta kreator memberi arti bagi karya bersama.
+    </p>
+
+    <div class="mt-6 rounded-2xl border border-[#F5C518]/35 bg-[#0A3A7E]/60 p-5 text-left">
+      <p class="text-[13px] leading-relaxed text-[#B9DCf5]">
+        <span class="font-bold text-[#F5C518]">Apresiasi khusus</span> untuk seluruh pekerja, relawan, dan kru BCF 2026.
+        Karya Anda adalah detak dari perayaan ini — karena bersama, kita selalu
+        <span class="font-bold text-white">Berkolaborasi Memberi Arti</span>.
+      </p>
+    </div>
+
+    <button id="modalClose" class="mt-8 w-full rounded-2xl bg-gradient-to-r from-[#307FE2] to-[#0857C3] border border-white/25 px-6 py-3.5 font-bold text-white shadow-lg shadow-[#0857C3]/50 hover:brightness-110 active:scale-[0.98] transition-transform">
+      Selesai
+    </button>
+  </div>
+</div>
+
+<script>
+(function () {
+  var scanner = document.getElementById('scanner');
+  var statusText = document.getElementById('statusText');
+  var progressFill = document.getElementById('progressFill');
+  var percentEl = document.getElementById('percent');
+  var scanBtn = document.getElementById('scanBtn');
+  var scanBtnText = document.getElementById('scanBtnText');
+  var scanBtnHint = document.getElementById('scanBtnHint');
+  var scanIcon = document.getElementById('scanIcon');
+  var modalOverlay = document.getElementById('modalOverlay');
+  var modalClose = document.getElementById('modalClose');
+
+  var SCAN_MS = 3000;
+  var state = 'idle';
+  var raf = null;
+  var finished = false;
+
+  var STATUS_TEXT = {
+    idle: 'Silakan Letakkan Kedua Telapak Tangan',
+    scanning: 'Memindai...',
+    success: 'Berhasil'
+  };
+
+  function setState(s) {
+    scanner.classList.remove('scanner-idle', 'scanner-scanning', 'scanner-success');
+    scanner.classList.add('scanner-' + s);
+    statusText.textContent = STATUS_TEXT[s];
+  }
+
+  function resetProgress() {
+    progressFill.style.width = '0%';
+    percentEl.textContent = '0%';
+  }
+
+  function onComplete() {
+    finished = true;
+    state = 'success';
+    setState('success');
+    scanBtnText.textContent = 'Pemindaian Berhasil';
+    scanBtnHint.textContent = 'Kolaborasi Anda telah dikenali';
+    scanBtn.disabled = true;
+    scanIcon.classList.remove('animate-spin');
+    if (navigator.vibrate) navigator.vibrate([60, 40, 120]);
+    setTimeout(function () {
+      showModal();
+      launchConfetti();
+    }, 650);
+  }
+
+  function startScan() {
+    if (state !== 'idle') return;
+    state = 'scanning';
+    finished = false;
+    setState('scanning');
+    scanBtnText.textContent = 'Memindai...';
+    scanBtnHint.textContent = 'Pemindaian sedang berlangsung...';
+    scanBtn.disabled = false;
+    scanIcon.classList.add('animate-spin');
+
+    var start = null;
+    var step = function (now) {
+      if (!start) start = now;
+      var t = Math.min(1, (now - start) / SCAN_MS);
+      var eased = 1 - Math.pow(1 - t, 3);
+      progressFill.style.width = (eased * 100).toFixed(1) + '%';
+      percentEl.textContent = Math.round(eased * 100) + '%';
+      if (t < 1) {
+        raf = requestAnimationFrame(step);
+      } else {
+        onComplete();
+      }
+    };
+    raf = requestAnimationFrame(step);
+  }
+
+  function showModal() {
+    modalOverlay.classList.add('show');
+  }
+
+  function hideModal() {
+    modalOverlay.classList.remove('show');
+  }
+
+  function launchConfetti() {
+    var colors = ['#71C5E8', '#307FE2', '#0857C3', '#F5C518', '#FFFFFF', '#B9DCf5'];
+    for (var i = 0; i < 70; i++) {
+      var piece = document.createElement('div');
+      piece.className = 'confetti-piece';
+      var size = 6 + Math.random() * 7;
+      piece.style.width = size + 'px';
+      piece.style.height = (size * (1.4 + Math.random())) + 'px';
+      piece.style.left = (Math.random() * 100) + 'vw';
+      piece.style.background = colors[i % colors.length];
+      piece.style.setProperty('--sway', ((Math.random() - 0.5) * 160).toFixed(0) + 'px');
+      piece.style.animationDuration = (2.6 + Math.random() * 1.9) + 's';
+      piece.style.animationDelay = (Math.random() * 0.7) + 's';
+      document.body.appendChild(piece);
+    }
+  }
+
+  function clearConfetti() {
+    var pieces = document.querySelectorAll('.confetti-piece');
+    for (var i = 0; i < pieces.length; i++) pieces[i].remove();
+  }
+
+  function resetAll() {
+    state = 'idle';
+    setState('idle');
+    resetProgress();
+    scanBtnText.textContent = 'Mulai Pindai';
+    scanBtnHint.textContent = 'Tekan Enter untuk memulai pemindaian';
+    scanBtn.disabled = false;
+    scanIcon.classList.remove('animate-spin');
+    clearConfetti();
+  }
+
+  scanBtn.addEventListener('click', function () {
+    if (state === 'idle') startScan();
+  });
+
+  document.addEventListener('contextmenu', function (e) {
+    if (scanner.contains(e.target)) e.preventDefault();
+  });
+
+  modalClose.addEventListener('click', function () {
+    hideModal();
+    resetAll();
+  });
+
+  modalOverlay.addEventListener('click', function (e) {
+    if (e.target === modalOverlay) {
+      hideModal();
+      resetAll();
+    }
+  });
+
+  window.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (modalOverlay.classList.contains('show')) {
+        hideModal();
+        resetAll();
+      } else if (state === 'idle') {
+        startScan();
+      }
+    } else if (e.key === 'Escape' && modalOverlay.classList.contains('show')) {
+      hideModal();
+      resetAll();
+    }
+  });
+})();
+</script>
+</body>
+</html>
